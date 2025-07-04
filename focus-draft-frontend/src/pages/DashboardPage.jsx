@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import Navbar from '../components/Navbar';
+import TasksModule from '../components/TaskModule';
 
 function DashboardPage() {
   const navigate = useNavigate();
@@ -21,9 +22,9 @@ function DashboardPage() {
 
         {/* Área para el Módulo de Tareas */}
         <section style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-          <h3>Módulo de Tareas</h3>
-          <p>Aquí se listarán y gestionarán tus micro-objetivos.</p>
-          {/* <TasksModule /> */}
+          {/* <h3>Módulo de Tareas</h3> */}
+          {/* <p>Aquí se listarán y gestionarán tus micro-objetivos.</p> */}
+          <TasksModule />
         </section>
 
         {/* Área para el Módulo de Borradores */}
