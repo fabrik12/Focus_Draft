@@ -1,24 +1,37 @@
 // src/pages/LoginPage.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import authService from '../services/authService';
 
 function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate(); 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        //LOGICA PARA SERVICIO AUTH
-        console.log('Datos de inicio de sesion: ', { username, password });
-        //CLEAN FIELDS
-        setUsername('');
-        setPassword('');
-        alert('Intento de inicio de sesion. (Logica viene pronto ;D)')
+        setError('');
+        try {
+            await authService.login(username, password);
+            alert('Inicio de sesion exitoso!');
+            //Tokens guardados
+            navigate('/dashboard');
+        } catch (err) {
+            console.error('Error de inicio de sesión', err);
+            if (err.response && err.response.data){
+                setError(err.response.data.detail || 'Credenciales inválidas. Inténtalo de nuevo')
+            } else {
+                setError('Error de inicio de sesión. Inténtalo de nuevo')
+            }
+
+        }
     }
 
   return (
     <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
       <h2>Iniciar Sesión</h2>
+      {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>} {/* Muestra el error */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div>
           <label htmlFor="username" style={{ display: 'block', marginBottom: '5px' }}>Nombre de Usuario:</label>

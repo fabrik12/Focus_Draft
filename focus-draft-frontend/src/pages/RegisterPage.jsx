@@ -8,21 +8,30 @@ function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const navigate = useNavigate(); 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        //LLAMADA AL SERVICIO ATUH SERVICE
-        console.log('Datos de registro:', {username, email, password});
-        setUsername('');
-        setEmail('');
-        setPassword('');
-        alert('Intento de registro. (Logica pronto se implementara)')
+        setError('');
+        try {
+            await authService.register(username, email, password);
+            alert('Registro exitoso! Por favor, inicia sesión!');
+            navigate('/login');
+        } catch (err) {
+            console.error('Error de registro: ', err);
+
+            if (err.response && err.response.data) {
+                setError(Object.values(err.responde.data).flat().join(' '));
+            } else {
+                setError('Error en el registro. Inténtalo de nuevo.');
+            }
+        }
     }
 
   return (
     <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
       <h2>Registrarse</h2>
+      {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>} {/* Muestra el error */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div>
           <label htmlFor="username" style={{ display: 'block', marginBottom: '5px' }}>Nombre de Usuario:</label>
