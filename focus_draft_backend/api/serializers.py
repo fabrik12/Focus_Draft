@@ -32,3 +32,9 @@ class DraftSerializer(serializers.ModelSerializer):
         model = Draft
         fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'project']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+class PomodoroSessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PomodoroSession
+        fields = ['id', 'completed_at']
+        read_only_fields = ['id', 'completed_at']
