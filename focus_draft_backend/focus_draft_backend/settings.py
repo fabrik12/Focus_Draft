@@ -40,12 +40,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'api',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddelware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -134,3 +135,23 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), # Token de acceso válido por 60 minutos
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Token de refresco válido por 1 día
+    'ROTATE_REFRESH_TOKENS': True, # Opcional: genera un nuevo token de refresco con cada solicitud de refresh
+    'BLACKLIST_AFTER_ROTATION': True, # Opcional: invalida el token de refresco antiguo
+    'UPDATE_LAST_LOGIN': True, # Opcional: actualiza el campo last_login del usuario
+}
