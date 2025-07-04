@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// Importa tus componentes de página
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+import DraftEditorPage from './pages/DraftEditorPage';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Aquí, más adelante, manejaremos el estado de autenticación para rutas protegidas
+  // const isAuthenticated = false; // Placeholder: Esto vendrá de tu contexto de autenticación
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* Rutas Protegidas (ej. requieren autenticación) */}
+        {/* Por ahora, las haremos accesibles para probar el enrutamiento.
+            Más adelante, se añadirán redirecciones si el usuario no está autenticado. */}
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/drafts/:id" element={<DraftEditorPage />} /> {/* :id para editar un borrador específico */}
+        <Route path="/drafts/new" element={<DraftEditorPage />} /> {/* Para crear un nuevo borrador */}
+
+        {/* Ruta por defecto para 404s o redirección a home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
