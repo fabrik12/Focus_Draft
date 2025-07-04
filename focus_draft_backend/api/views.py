@@ -1,11 +1,16 @@
 # focus_draft_backend/api/views.py
 
+from datetime import timezone
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny # Para el registro, no se requiere autenticación
+from rest_framework.permissions import AllowAny, IsAuthenticated # Para el registro, no se requiere autenticación
 from .serializers import UserSerializer # Importa el serializer que acabamos de crear
+
 from django.contrib.auth.models import User
+
+from .models import Project, Task, Draft, PomodoroSession
+from .serializers import TaskSerializer, DraftSerializer, PomodoroSessionSerializer
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -24,3 +29,60 @@ class RegisterView(generics.CreateAPIView):
         #     "access": str(refresh.access_token),
         # }, status=status.HTTP_201_CREATED)
         return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+    
+class TaskListCreateView(generics.ListCreateAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user).order_by('-created_at')
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
+    
+
+class DraftListCreateView(generics.ListCreateAPIView):
+    serializer_class = DraftSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Draft.objects.filter(user=self.request.user).order_by('-created_at')
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class DraftDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = DraftSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Draft.objects.filter(user=self.request.user)
+    
+class PomodoroSessionListCreateView(generics.ListCreateAPIView):
+    serializer_class = PomodoroSessionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return PomodoroSession.objects.filter(user=self.request.user).order_by('-completed_at')
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class PomodoroSessionTodayCountView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        today = timezone.localdate()
+        count = PomodoroSession.objects.filter(
+            user=request.user,
+            completed_at__date=today
+        ).count()
+        return Response({"count": count}, status=status.HTTP_200_OK)
+        

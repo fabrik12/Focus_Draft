@@ -98,4 +98,4 @@ class PomodoroSession(models.Model):
             models.Index(fields=['user']),
         ]
         # Opcional: Para consultas de sesiones diarias, se podrías considerar un índice en completed_at
-        # indexes.append(models.Index(fields=['completed_at']))
+        # indexes.append(models.Index(fields=['completed_at'])):
