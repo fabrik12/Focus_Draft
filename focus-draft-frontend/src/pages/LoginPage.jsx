@@ -24,7 +24,6 @@ function LoginPage() {
             } else {
                 setError('Error de inicio de sesión. Inténtalo de nuevo')
             }
-
         }
     }
 

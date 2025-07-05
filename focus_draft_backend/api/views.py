@@ -1,6 +1,6 @@
 # focus_draft_backend/api/views.py
 
-from datetime import timezone
+from datetime import timezone, date
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -47,6 +47,19 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
     
+    def update(self, request, *args, **kwargs):
+        partial = True # Forzar la actualización parcial
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly refresh the instance from the database.
+            instance = self.get_object()
+        return Response(serializer.data)
+    
 
 class DraftListCreateView(generics.ListCreateAPIView):
     serializer_class = DraftSerializer
@@ -79,7 +92,7 @@ class PomodoroSessionTodayCountView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        today = timezone.localdate()
+        today = date.today()
         count = PomodoroSession.objects.filter(
             user=request.user,
             completed_at__date=today

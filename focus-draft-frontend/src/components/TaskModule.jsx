@@ -30,7 +30,7 @@ function TasksModule() {
   const handleAddTask = async (description) => {
     try {
       const newTask = await taskService.createTask(description);
-      setTasks((prevTasks) => [newTask, ...prevTasks]); // Añadir la nueva tarea al principio
+      setTasks((prevTasks) => [newTask, ...prevTasks]);
       setError('');
     } catch (err) {
       console.error('Error al añadir tarea:', err);
@@ -40,7 +40,6 @@ function TasksModule() {
 
   const handleToggleComplete = async (taskId, isCompleted) => {
     try {
-      // Optimistic update: actualiza la UI antes de la respuesta del servidor
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
           task.id === taskId ? { ...task, is_completed: isCompleted } : task
@@ -51,39 +50,57 @@ function TasksModule() {
     } catch (err) {
       console.error('Error al actualizar tarea:', err);
       setError('No se pudo actualizar el estado de la tarea.');
-      // Revertir optimistic update si falla (opcional, para mayor robustez)
-      fetchTasks(); // Refrescar la lista de tareas
+      fetchTasks();
     }
   };
 
   const handleDeleteTask = async (taskId) => {
-    try {
-      // Optimistic update
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-      await taskService.deleteTask(taskId);
-      setError('');
-    } catch (err) {
-      console.error('Error al eliminar tarea:', err);
-      setError('No se pudo eliminar la tarea.');
-      // Revertir optimistic update si falla
-      fetchTasks(); // Refrescar la lista de tareas
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+      try {
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+        await taskService.deleteTask(taskId);
+        setError('');
+      } catch (err) {
+        console.error('Error al eliminar tarea:', err);
+        setError('No se pudo eliminar la tarea.');
+        fetchTasks();
+      }
     }
   };
 
-  if (loading) {
-    return <p>Cargando tareas...</p>;
+ if (loading) {
+    return <p className="text-white px-4">Cargando tareas...</p>;
   }
 
   return (
-    <div style={{ padding: '20px', border: '1px solid #eee', borderRadius: '8px', backgroundColor: '#fff' }}>
-      <h3>Módulo de Tareas</h3>
-      {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
-      <TaskForm onTaskAdded={handleAddTask} />
-      <TaskList
-        tasks={tasks}
-        onToggleComplete={handleToggleComplete}
-        onDeleteTask={handleDeleteTask}
-      />
+    <div className="flex flex-col flex-1">
+        {error && <p className="text-red-500 px-4 mb-4">{error}</p>}
+        <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+        <TaskForm onTaskAdded={handleAddTask} />
+        </div>
+        {/* Lista de tareas pendientes */}
+        {tasks.filter(task => !task.is_completed).length === 0 ? (
+        <p className="text-[#93adc8] text-base px-4 py-3">No hay tareas pendientes. ¡Añade una nueva!</p>
+        ) : (
+        <TaskList
+            tasks={tasks.filter(task => !task.is_completed)} // Mostrar solo pendientes aquí
+            onToggleComplete={handleToggleComplete}
+            onDeleteTask={handleDeleteTask}
+        />
+        )}
+
+
+        <h3 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Completed</h3>
+        {/* Lista de tareas completadas */}
+        {tasks.filter(task => task.is_completed).length === 0 ? (
+        <p className="text-[#93adc8] text-base px-4 py-3">No hay tareas completadas.</p>
+        ) : (
+        <TaskList
+            tasks={tasks.filter(task => task.is_completed)} // Mostrar solo completadas aquí
+            onToggleComplete={handleToggleComplete}
+            onDeleteTask={handleDeleteTask}
+        />
+        )}
     </div>
   );
 }

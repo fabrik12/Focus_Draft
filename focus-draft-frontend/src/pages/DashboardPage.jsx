@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import Navbar from '../components/Navbar';
 import TasksModule from '../components/TaskModule';
+import DraftsListModule from '../components/DraftListModule';
+import PomodoroModule from '../components/PomodoroModule';
 
 function DashboardPage() {
   const navigate = useNavigate();
@@ -15,40 +17,39 @@ function DashboardPage() {
   }, [navigate]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f4f7f6' }}>
-      <Navbar /> {/* Incluye la barra de navegación */}
-      <main style={{ flexGrow: 1, padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <h2>Tu Tablero Personal</h2>
+    <div className="relative flex size-full min-h-screen flex-col bg-[#111a22] dark group/design-root overflow-x-hidden">
+      <Navbar /> {/* Tu Navbar ya adaptado */}
 
-        {/* Área para el Módulo de Tareas */}
-        <section style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-          {/* <h3>Módulo de Tareas</h3> */}
-          {/* <p>Aquí se listarán y gestionarán tus micro-objetivos.</p> */}
-          <TasksModule />
-        </section>
+      <div className="layout-container flex h-full grow flex-col">
+        <div className="gap-1 px-6 flex flex-1 justify-center py-5">
+          {/* Columna Izquierda: Today's Plan (Tareas) */}
+          <div className="layout-content-container flex flex-col w-80">
+            <h2 className="text-white tracking-light text-[28px] font-bold leading-tight px-4 text-left pb-3 pt-5">
+              Today's Plan
+            </h2>
+            {/* Aquí renderizamos el TasksModule. Sus estilos internos ya tienen sus propios divs de sección */}
+            <TasksModule />
+          </div>
 
-        {/* Área para el Módulo de Borradores */}
-        <section style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-          <h3>Módulo de Borradores</h3>
-          <p>Accede a tus borradores y al editor de escritura libre.</p>
-          <Link to="/drafts/new" style={{ textDecoration: 'none', backgroundColor: '#007bff', color: 'white', padding: '8px 12px', borderRadius: '5px' }}>
-            Nuevo Borrador
-          </Link>
-          {/* <DraftsListModule /> */}
-        </section>
+          {/* Columna Derecha: Focus Mode (Pomodoro) y Start Writing (Borradores) */}
+          <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
+            {/* Módulo Pomodoro */}
+            <h3 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">
+              Focus Mode
+            </h3>
+            {/* Aquí renderizamos el PomodoroModule. Sus estilos internos ya tienen sus propios divs de sección */}
+            <PomodoroModule />
 
-        {/* Área para el Módulo Pomodoro */}
-        <section style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-          <h3>Módulo de Enfoque (Pomodoro)</h3>
-          <p>Controla tus sesiones de trabajo concentrado.</p>
-          {/* <PomodoroModule /> */}
-        </section>
-
-        {/* Puedes añadir un footer simple si lo deseas */}
-        <footer style={{ textAlign: 'center', padding: '20px', color: '#666', fontSize: '0.8em', marginTop: 'auto' }}>
-          &copy; {new Date().getFullYear()} Focus & Draft. Todos los derechos reservados.
-        </footer>
-      </main>
+            {/* Módulo Borradores */}
+            <h3 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4 mt-6"> {/* Añadido mt-6 para espacio */}
+              Start Writing
+            </h3>
+            {/* Aquí renderizamos el DraftsListModule. Sus estilos internos ya tienen sus propios divs de sección */}
+            <DraftsListModule />
+          </div>
+        </div>
+      </div>
+      {/* Opcional: Un footer global si lo deseas aquí, o dejarlo implícito por el fondo oscuro */}
     </div>
   );
 }

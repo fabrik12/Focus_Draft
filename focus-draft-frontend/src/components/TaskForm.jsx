@@ -17,19 +17,22 @@ function TaskForm({ onTaskAdded }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+    <label className="flex flex-col min-w-40 flex-1">
       <input
-        type="text"
-        placeholder="Añadir nueva tarea..."
+        placeholder="Add a new task"
+        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border border-[#344d65] bg-[#1a2632] focus:border-[#344d65] h-14 placeholder:text-[#93adc8] p-[15px] text-base font-normal leading-normal"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        style={{ flexGrow: 1, padding: '10px', borderRadius: '5px', border: '1px solid #ddd' }}
+        onKeyDown={(e) => { // Permitir añadir con Enter
+          if (e.key === 'Enter') {
+            handleSubmit(e);
+          }
+        }}
       />
-      <button type="submit" style={{ padding: '10px 15px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-        Añadir Tarea
-      </button>
-      {error && <p style={{ color: 'red', marginTop: '5px', width: '100%' }}>{error}</p>}
-    </form>
+      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {/* El botón de "Añadir Tarea" se omite aquí porque el diseño parece usar solo el input para añadir */}
+      {/* Si quieres un botón, puedes añadirlo dentro de este label o en TaskModule */}
+    </label>
   );
 }
 
